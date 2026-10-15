@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>One 10 - Restaurant Management System</title>
+<style>
+:root{--bg:#fff8e8;--card:#fff;--ink:#2b2118;--mut:#7a6a58;--gold:#f2a900;--green:#2f7d32;--red:#c8372d;--line:#ead9b5;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1812;--card:#2a231a;--ink:#f5ead4;--mut:#b9a889;--line:#443a2a}}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Georgia,'Times New Roman',serif;min-height:100%}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:10px 14px;background:var(--gold);color:#2b2118;font-weight:700}
+button:focus-visible,input:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+button.g{background:var(--green);color:#fff}button.r{background:var(--red);color:#fff}button.o{background:transparent;border:2px solid var(--line);color:var(--ink)}
+input{font:inherit;padding:10px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);width:100%}
+.top{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--gold);color:#2b2118;flex-wrap:wrap}
+.top b{font-size:1.3rem;flex:1}.badge{padding:4px 10px;border-radius:99px;font-size:.85rem;background:#fff;color:#2b2118}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+.center{max-width:420px;margin:8vh auto;text-align:center;padding:16px}
+h1{font-size:2.6rem;margin:0}.addr{color:var(--mut);margin:4px 0 20px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:20px}
+.tile{background:var(--card);border:2px solid var(--line);border-bottom:8px solid var(--green);padding:26px 16px;font-size:1.3rem;text-align:center;border-radius:14px;color:var(--ink)}
+.tile:nth-child(1){border-bottom-color:var(--red)}.tile small{display:block;font-weight:400;color:var(--mut);margin-top:6px;font-size:.9rem}
+.pos{display:grid;grid-template-columns:1fr 340px;gap:14px}
+@media(max-width:800px){.pos{grid-template-columns:1fr}}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.tabs button{background:var(--card);border:2px solid var(--line);color:var(--ink)}.tabs button.on{background:var(--green);color:#fff;border-color:var(--green)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.item{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:10px}
+.item .pic{font-size:2.2rem}.item h3{margin:2px 0 6px;font-size:1.05rem}.item p{margin:0 0 6px;color:var(--mut);font-size:.85rem}
+.vars{display:flex;gap:6px;flex-wrap:wrap}.vars button{padding:6px 9px;font-size:.85rem}
+.cart{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:12px;position:sticky;top:8px;align-self:start}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.row .q button{padding:2px 9px}.tot{font-size:1.6rem;font-weight:800;text-align:right;margin:10px 0}
+table{width:100%;border-collapse:collapse;background:var(--card)}th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.sc{overflow-x:auto}
+.big{font-size:2rem;font-weight:800}.cart input{margin:4px 0}.cart .row input{width:120px}
+#rcpt{display:none}
+@media print{body>*:not(#rcpt){display:none!important}#rcpt{display:block;width:72mm;margin:0;color:#000;background:#fff;font:12px/1.3 monospace}#rcpt h2,#rcpt .c{text-align:center;margin:2px 0}#rcpt .l{display:flex;justify-content:space-between}#rcpt hr{border:0;border-top:1px dashed #000}#rcpt .b{font-size:20px;font-weight:900}@page{size:80mm auto;margin:3mm}}
+</style></head><body>
+<div id="app"></div><div id="rcpt"></div>
+<script>
+const NAME="One 10",ADDR="Jhumra Chowk Near Subhan Hospital",PASS="1334",MANAGER="5555",PHONE="",VERSION="2.0";
+const P=(n,e,s,m,l)=>({n,e,v:[["Small",s],["Medium",m],["Large",l]].filter(x=>x[1])});
+const MENU={
+"Pizza":[P("Chicken Tandoori","🍕",350,650,950),P("Chicken Tikka","🍕",350,650,950),P("Chicken Fajita","🍕",350,650,950),P("Chicken Supreme","🍕",350,650,950),
+P("Mayo Garlic","🍕",400,700,1050),P("Don Special","🍕",400,700,1050),P("Malai Boti","🍕",400,700,1050),P("Behari Kabab","🍕",450,750,1150),
+P("Kabab Stuffer Special","🍕",0,800,1200),P("Crown Crust Special","🍕",0,850,1250),P("Square Special","🍕",0,900,1350)],
+"Burgers":[{n:"Peti Burger",e:"🍔",v:[["Regular",280]]},{n:"Zinger Burger",e:"🍔",v:[["Regular",350]]},{n:"Jalapeno Burger",e:"🍔",v:[["Regular",400]]},{n:"Chipotle Burger",e:"🍔",v:[["Regular",420]]},{n:"Don Special Burger",e:"🍔",v:[["Regular",650]]},{n:"Crispy Wrap",e:"🌯",v:[["Regular",350]]}],
+"Pasta":[{n:"Macaroni Pasta",e:"🍝",v:[["F1",350],["F2",650]]},{n:"Special Pasta",e:"🍝",v:[["F1",400],["F2",750]]},{n:"Crunchy Pasta",e:"🍝",v:[["F1",400],["F2",750]]}],
+"Rolls & Sides":[{n:"Pizza Sandwich",e:"🥪",v:[["Regular",700]]},{n:"Chicken Spin Roll",e:"🌯",v:[["Regular",490]]},{n:"Malai Boti Roll",e:"🌯",v:[["Regular",550]]},{n:"Nuggets",e:"🍗",v:[["6 Pcs",350],["12 Pcs",700]]},{n:"Hot Wings",e:"🍗",v:[["5 Pcs",350],["10 Pcs",650]]},{n:"Fries",e:"🍟",v:[["Regular",250]]}],
+"Deals":[
+["Deal 1","Zinger Burger + Small Pizza + 500ml Drink",780],["Deal 2","Zinger Burger + Patty Burger + 500ml Drink",700],["Deal 3","Zinger Burger + Crispy Wrap + 500ml Drink",770],["Deal 4","Crispy Wrap + 5 Hot Wings + 500ml Drink",750],["Deal 5","4 Crispy Wrap + 1 Litre Drink",1450],["Deal 6","4 Zinger Burger + 1 Litre Drink",1500],
+["Deal 7","2 Small Pizza + 500ml Drink",790,850],["Deal 8","2 Large Pizza + 2 Litre Drink",2170,2270],["Deal 9","1 Large + 1 Medium Pizza + 1.5 Litre Drink",1760,1850],
+["Deal 10","Pasta F2 + 10 Hot Wings + Crispy Wrap + 1.5 Litre Drink",1700],["Deal 11","Large Pizza + 2 Zinger + 2 Crispy Wrap + 2 Litre Drink",2550],["Deal 12","Pizza Sandwich + Pasta F1 + 500ml Drink",1050],["Deal 13","2 Spin Roll + Fries + 1 Litre Drink",1250],["Deal 14","6 Zinger Burger + 2 Litre Drink",2150],["Deal 15","6 Crispy Wrap + 2 Litre Drink",2150]
+].map(d=>({n:d[0],e:"🎁",d:d[1],v:d[3]?[["TF",d[2]],["SF",d[3]]]:[["Deal",d[2]]]}))};
+// ---- storage (works offline, on this device) ----
+let DB={shift:null,orders:[],shifts:[],purch:[],seq:0};
+try{const s=localStorage.getItem("one10db");if(s)DB=JSON.parse(s)}catch(e){}
+const save=()=>{try{localStorage.setItem("one10db",JSON.stringify(DB))}catch(e){}try{fetch("/backup",{method:"POST",body:JSON.stringify(DB)}).catch(()=>{})}catch(e){}};
+let S={page:"login",cat:"Pizza",cart:[],pay:"Cash",busy:0,type:"Pack",table:"",disc:0,dl:0,cash:"",cname:"",cph:"",cadd:""};
+const $=id=>document.getElementById(id),fmt=n=>"Rs. "+n.toLocaleString("en-PK");
+const dt=t=>new Date(t).toLocaleString("en-GB",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:true});
+const go=p=>{S.page=p;draw()};
+function hdr(t){return `<div class="top"><b>🍕 ${NAME}</b><span class="badge">${DB.shift?"Shift OPEN since "+dt(DB.shift.open):"Shift CLOSED"}</span><span class="badge">v${VERSION}</span><span class="badge">${navigator.onLine?"Online":"Offline - still working"}</span>${t?`<button class="o" style="background:#fff" onclick="go('home')">← Home</button>`:""}</div>`}
+function draw(){const a=$("app");
+if(S.page=="login")a.innerHTML=`<div class="center"><h1>${NAME}</h1><div class="addr">${ADDR}</div><h2>Restaurant Management System</h2><input id="pw" type="password" placeholder="Enter password" onkeydown="if(event.key=='Enter')login()"><p style="color:var(--mut);font-size:.85rem">Demo password: 1234</p><button class="g" style="width:100%;font-size:1.1rem" onclick="login()">Log in</button><p id="err" style="color:var(--red)"></p></div>`;
+else if(S.page=="home")a.innerHTML=hdr()+`<div class="wrap" style="text-align:center"><h1>${NAME}</h1><div class="addr">${ADDR}</div><h2>Restaurant Management System</h2><div class="tiles">
+<button class="tile" onclick="go('inv')">🧾 Invoice<small>Take a new order</small></button>
+<button class="tile" onclick="go('daily')">📋 Daily Sale<small>See today's orders</small></button>
+<button class="tile" onclick="go('shift')">⏱️ Shift ${DB.shift?"Close":"Open"}<small>${DB.shift?"End shift and print total":"Start a new shift"}</small></button>
+<button class="tile" onclick="go('purch')">🛒 Purchase Inv<small>Record stock bought</small></button>
+<button class="tile" onclick="testPrint()">🖨️ Printer Test<small>Check both printers</small></button></div>
+<p><button class="o" onclick="go('login')">Log out</button></p></div>`;
+else if(S.page=="inv")inv();else if(S.page=="daily")daily();else if(S.page=="shift")shift();else if(S.page=="purch")purch();}
+function login(){if($("pw").value==PASS)go("home");else $("err").textContent="Wrong password. Try again."}
+function nextNo(){const d=new Date().toDateString();return Math.max(0,...DB.orders.filter(o=>new Date(o.t).toDateString()==d).map(o=>o.no))+1}
+const q=x=>String(x||"").replace(/"/g,"&quot;");
+function calc(){const sub=S.cart.reduce((a,c)=>a+c.p*c.q,0),d=Math.min(S.disc||0,sub),dl=S.type=="Delivery"?(S.dl||0):0;return{sub,d,dl,net:sub-d+dl}}
+function upd(){const k=calc();$("tn").textContent=fmt(k.net);$("bal").textContent=S.cash?fmt((+S.cash)-k.net):"-"}
+function inv(){
+if(!DB.shift){$("app").innerHTML=hdr(1)+`<div class="center"><h2>Shift is not open</h2><p>Open a shift first, so sales are counted.</p><button class="g" onclick="go('shift')">Go to Shift</button></div>`;return}
+const cats=Object.keys(MENU),k=calc();
+$("app").innerHTML=hdr(1)+`<div class="wrap pos"><div><div class="tabs">${cats.map(c=>`<button class="${c==S.cat?"on":""}" onclick="S.cat='${c}';inv()">${c}</button>`).join("")}</div>
+<div class="grid">${MENU[S.cat].map((m,i)=>`<div class="item"><div class="pic">${m.e}</div><h3>${m.n}</h3>${m.d?`<p>${m.d}</p>`:""}<div class="vars">${m.v.map((v,j)=>`<button onclick="add(${i},${j})">${v[0]} ${v[1]}</button>`).join("")}</div></div>`).join("")}</div></div>
+<div class="cart"><h3 style="margin-top:0">Order #${nextNo()}</h3>
+<div class="tabs">${["Pack","Dine In","Delivery"].map(t=>`<button class="${t==S.type?"on":""}" onclick="S.type='${t}';inv()">${t}</button>`).join("")}</div>
+${S.type=="Dine In"?`<input placeholder="Table number" value="${q(S.table)}" oninput="S.table=this.value">`:""}
+${S.type=="Delivery"?`<input placeholder="Customer name" value="${q(S.cname)}" oninput="S.cname=this.value"><input placeholder="Phone" value="${q(S.cph)}" oninput="S.cph=this.value"><input placeholder="Address" value="${q(S.cadd)}" oninput="S.cadd=this.value">`:""}
+${S.cart.length?S.cart.map((c,i)=>`<div class="row"><div>${c.n}<br><small>${c.s} · ${fmt(c.p)}</small></div><div class="q"><button onclick="qty(${i},-1)">−</button> ${c.q} <button onclick="qty(${i},1)">+</button></div></div>`).join(""):`<p style="color:var(--mut)">Cart is empty. Tap a price to add.</p>`}
+<div class="row"><span>Sub total</span><b>${fmt(k.sub)}</b></div>
+<div class="row"><span>Discount (Rs.)</span><input type="number" min="0" value="${S.disc||""}" oninput="S.disc=+this.value||0;upd()"></div>
+${S.type=="Delivery"?`<div class="row"><span>Delivery charges</span><input type="number" min="0" value="${S.dl||""}" oninput="S.dl=+this.value||0;upd()"></div>`:""}
+<div class="tot">Total: <span id="tn">${fmt(k.net)}</span></div>
+<div class="tabs">${["Cash","Online"].map(t=>`<button class="${t==S.pay?"on":""}" onclick="S.pay='${t}';inv()">${t}</button>`).join("")}</div>
+<div class="row"><span>Cash received</span><input type="number" min="0" value="${q(S.cash)}" oninput="S.cash=this.value;upd()"></div>
+<div class="row"><span>Balance (change)</span><b id="bal">${S.cash?fmt(+S.cash-k.net):"-"}</b></div>
+<button class="g" style="width:100%;margin-top:8px" ${S.cart.length?"":"disabled"} onclick="place()">Place order and print both slips</button> <button class="o" style="width:100%;margin-top:6px" onclick="S.cart=[];inv()">Clear cart</button></div></div>`}
+function add(i,j){const m=MENU[S.cat][i],v=m.v[j],k=S.cart.find(c=>c.n==m.n&&c.s==v[0]);k?k.q++:S.cart.push({n:m.n,s:v[0],p:v[1],q:1});inv()}
+function qty(i,d){S.cart[i].q+=d;if(S.cart[i].q<1)S.cart.splice(i,1);inv()}
+function place(){if(S.busy)return;const last=DB.orders[DB.orders.length-1],sig=JSON.stringify(S.cart);
+if(last&&Date.now()-last.t<60000&&JSON.stringify(last.items)==sig&&!confirm("The same order was placed less than a minute ago. Place it again?"))return;
+S.busy=1;setTimeout(()=>S.busy=0,1500);const k=calc(),dl=S.type=="Delivery",o={no:nextNo(),t:Date.now(),items:S.cart,sub:k.sub,disc:k.d,dl:k.dl,total:k.net,type:S.type,table:S.table,cname:S.cname,cph:S.cph,cadd:S.cadd,cash:+S.cash||0,pay:S.pay,status:dl?"pending":"ok",st:dl?0:Date.now()};
+DB.orders.push(o);DB.seq=DB.orders.length;save();S.cart=[];S.disc=0;S.dl=0;S.cash="";S.table="";S.cname=S.cph=S.cadd="";S.pay="Cash";printBill(o);inv()}
+const D2=n=>String(n).padStart(2,"0"),stamp=t=>{const d=new Date(t);return D2(d.getDate())+"-"+D2(d.getMonth()+1)+"-"+d.getFullYear()+" "+d.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit",second:"2-digit"})};
+const L=(t,r="",a="l",b=0,z=0)=>({t,r,a,b,z}),LN=()=>L("--");
+async function sendPrint(p,lines){const r=await fetch("/print",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({printer:p,lines})});if(!r.ok)throw new Error(await r.text())}
+async function printBill(o){
+const sp=o.type=="Dine In"&&o.table?"Table # "+o.table:"",ty=(o.type||"Pack").toUpperCase();
+const cust=[L(NAME,"","c",1,1),L(ADDR,"","c"),...(PHONE?[L(PHONE,"","c")]:[]),L("Sales Invoice","","c",1),L(ty+" ORDER","","c",1),...(o.type=="Delivery"?[L("*** HOME DELIVERY ***","","c",1,1)]:[]),LN(),
+L("Invoice # "+o.no,stamp(o.t),"l",1),L("Customer: "+(o.cname||"Walking Customer")),...(o.cph?[L("Contact: "+o.cph)]:[]),...(o.cadd?[L("Address: "+o.cadd)]:[]),...(sp?[L(sp)]:[]),LN(),
+L("Description","Rate x Qty = Total","l",1),LN(),
+...o.items.flatMap((c,i)=>[L((i+1)+". "+c.n+" ("+c.s+")"),L("",c.p+" x "+c.q+" = "+c.q*c.p)]),LN(),
+L("Sub. Total",""+o.sub,"l",1),...(o.disc?[L("Discount","-"+o.disc)]:[]),...(o.dl?[L("Delivery Charges",""+o.dl)]:[]),L("TOTAL","Rs. "+o.total,"l",1,1),
+L("Payment: "+(o.pay||"Cash"),"","l",1),...(o.cash&&o.pay!="Online"?[L("Cash",""+o.cash),L("Balance",""+(o.cash-o.total))]:[]),LN(),L("Thank you! Please visit again","","c")];
+const kit=[L(NAME,"","c",1,1),L("Order # "+o.no,ty,"l",1,1),L("KITCHEN ORDER",(o.pay||"Cash").toUpperCase(),"l",1),...(o.type=="Delivery"?[L("*** DELIVERY ***","","c",1,1)]:[]),L("Date/Time: "+stamp(o.t)),...(sp?[L(sp,"","l",1)]:[]),LN(),L("Item","Qty","l",1),LN(),
+...o.items.map(c=>L(c.n+" ("+c.s+")",""+c.q,"l",1)),LN()];
+try{await Promise.all([sendPrint("customer",cust),sendPrint("kitchen",kit)])}catch(e){alert("Printer problem: "+e.message+"\nOpening normal print window instead.");printBillHtml(o)}}
+async function printShift(r){const n=x=>"Rs. "+(x||0).toLocaleString("en-PK"),l=[L(NAME,"","c",1,1),L(ADDR,"","c"),LN(),L("SHIFT SALE REPORT","","c",1),L("Date: "+new Date(r.close).toDateString()),L("Shift Open : "+stamp(r.open)),L("Shift Close: "+stamp(r.close)),LN(),L("Total Orders",""+r.orders),L("Paid by Cash",n(r.cash),"l",1),L("Paid Online",n(r.online),"l",1),LN(),L("TOTAL SALE","","c",1),L(n(r.total),"","c",1,2),LN(),...(r.voids?[L("Cancelled orders: "+r.voids)]:[]),...(r.pending?[L("Deliveries pending (not counted): "+r.pending)]:[])];
+try{await sendPrint("customer",l)}catch(e){alert("Printer problem: "+e.message);window.print()}go("home")}
+async function testPrint(){try{const r=await fetch("/printers");if(!r.ok)throw new Error(await r.text());const j=await r.json();
+alert("Printers found on this PC:\n- "+j.installed.join("\n- ")+"\n\nSoftware will use:\nCustomer = "+j.customer+"\nKitchen = "+j.kitchen+"\n\nNow printing a test slip on both.");
+await Promise.all([sendPrint("customer",[L(NAME,"","c",1,1),L("TEST - CUSTOMER PRINTER","","c",1),L(stamp(Date.now()),"","c"),LN()]),sendPrint("kitchen",[L(NAME,"","c",1,1),L("TEST - KITCHEN PRINTER","","c",1),L(stamp(Date.now()),"","c"),LN()])]);
+}catch(e){alert("Test failed: "+e.message+"\n\nOpen the app from the black start.bat window (http://localhost:3000), not by double-clicking the html file.")}}
+function printBillHtml(o){$("rcpt").innerHTML=`<h2>${NAME}</h2><div class="c">${ADDR}</div><hr><div class="l"><span>Order No: ${o.no}</span><span>${dt(o.t)}</span></div><hr>${o.items.map(c=>`<div>${c.n} (${c.s})</div><div class="l"><span>${c.q} x ${c.p}</span><span>${c.q*c.p}</span></div>`).join("")}<hr><div class="l b"><span>TOTAL</span><span>Rs. ${o.total}</span></div><hr><div class="c">Thank you! Please visit again</div>`;setTimeout(()=>window.print(),100)}
+const isOk=o=>(o.status||"ok")=="ok",stt=o=>o.st||o.t,payOf=o=>o.pay||"Cash";
+function sales(a,b){const l=DB.orders.filter(o=>isOk(o)&&stt(o)>=a&&stt(o)<=b),f=m=>l.filter(o=>payOf(o)==m).reduce((s,o)=>s+o.total,0);return{n:l.length,cash:f("Cash"),online:f("Online"),total:l.reduce((s,o)=>s+o.total,0)}}
+function auth(){const p=prompt("Manager password:");if(p===null)return false;if(p===MANAGER)return true;alert("Wrong password.");return false}
+function voidOrder(t){const o=DB.orders.find(x=>x.t==t);if(!o||!auth())return;const why=prompt("Why is Order #"+o.no+" cancelled?","Printed twice");if(why===null)return;o.status="void";o.voidAt=Date.now();o.why=why;save();
+sendPrint("kitchen",[L(NAME,"","c",1,1),L("*** CANCELLED ***","","c",1,1),L("Order # "+o.no,"","c",1,1),L("Do NOT make this order","","c",1),L(stamp(Date.now()),"","c"),LN()]).catch(()=>{});daily()}
+function deliver(t){const o=DB.orders.find(x=>x.t==t);if(!o||!auth())return;if(!confirm("Order #"+o.no+" delivered and "+payOf(o)+" "+fmt(o.total)+" received?"))return;o.status="ok";o.st=Date.now();save();daily()}
+function daily(){const d=new Date().toDateString(),all=DB.orders.filter(o=>new Date(o.t).toDateString()==d).reverse(),a=new Date();a.setHours(0,0,0,0);
+const s=sales(a.getTime(),Date.now()+1),pend=all.filter(o=>o.status=="pending").length,vd=all.filter(o=>o.status=="void").length;
+$("app").innerHTML=hdr(1)+`<div class="wrap"><h2>Daily Sale - ${d}</h2><div class="big">${fmt(s.total)}</div><p>Cash <b>${fmt(s.cash)}</b> · Online <b>${fmt(s.online)}</b> · ${s.n} sales${pend?` · <span style="color:var(--red)">${pend} delivery pending (not counted)</span>`:""}${vd?` · ${vd} cancelled`:""}</p>
+<div class="sc"><table><tr><th>Order No</th><th>Time</th><th>Order</th><th>Total</th><th>Status</th><th></th></tr>${all.map(o=>{const st=o.status||"ok",v=st=="void";return `<tr style="${v?"opacity:.5;text-decoration:line-through":""}"><td>#${o.no}<br><small>${o.type||""}</small></td><td>${new Date(o.t).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit",hour12:true})}</td><td>${o.items.map(c=>c.q+" x "+c.n+" ("+c.s+")").join("<br>")}</td><td><b>${o.total}</b><br><small>${payOf(o)}</small></td><td style="text-decoration:none">${v?"CANCELLED<br><small>"+(o.why||"")+"</small>":st=="pending"?"⏳ Delivery pending":"✔ Sold"}</td><td>${v?"":`<button onclick="printBill(DB.orders.find(x=>x.t==${o.t}))">Reprint</button> `}${st=="pending"?`<button class="g" onclick="deliver(${o.t})">Delivered</button> `:""}${v?"":`<button class="r" onclick="voidOrder(${o.t})">Cancel</button>`}</td></tr>`}).join("")||`<tr><td colspan=6>No orders yet today.</td></tr>`}</table></div></div>`}
+function shift(){const a=$("app");
+if(!DB.shift){a.innerHTML=hdr(1)+`<div class="center"><h2>No shift is open</h2><p>Press the button to start. Sales will be counted from this moment.</p><button class="g" style="font-size:1.2rem" onclick="DB.shift={open:Date.now(),from:DB.seq};save();go('shift')">Open Shift</button></div>`;return}
+const s=sales(DB.shift.open,Date.now()+1),pend=DB.orders.filter(o=>o.status=="pending").length;
+a.innerHTML=hdr(1)+`<div class="center"><h2>Shift is open</h2><p>Opened: ${dt(DB.shift.open)}</p><p>${s.n} sales so far</p><div class="big">${fmt(s.total)}</div><p>Cash ${fmt(s.cash)} · Online ${fmt(s.online)}</p>${pend?`<p style="color:var(--red)">${pend} delivery order(s) not delivered yet - not counted</p>`:""}<br><button class="r" style="font-size:1.2rem" onclick="closeShift()">Close Shift and print total</button></div>`}
+function closeShift(){const pend=DB.orders.filter(o=>o.status=="pending").length;if(pend&&!confirm(pend+" delivery order(s) are not delivered yet, so they are NOT counted. Close shift anyway?"))return;if(!confirm("Close the shift now?"))return;
+const sh=DB.shift,c=Date.now(),s=sales(sh.open,c),vd=DB.orders.filter(o=>o.status=="void"&&o.voidAt>=sh.open).length,r={open:sh.open,close:c,orders:s.n,total:s.total,cash:s.cash,online:s.online,voids:vd,pending:pend};DB.shifts.push(r);DB.shift=null;save();
+$("rcpt").innerHTML=`<h2>${NAME}</h2><div class="c">${ADDR}</div><hr><h2>SHIFT SALE REPORT</h2><div>Open: ${dt(r.open)}</div><div>Close: ${dt(r.close)}</div><div>Cash: ${r.cash}</div><div>Online: ${r.online}</div><hr><div class="c">TOTAL SALE</div><div class="c b">Rs. ${r.total.toLocaleString("en-PK")}</div>`;printShift(r)}
+function purch(){const t=DB.purch.reduce((a,p)=>a+p.amt,0);
+$("app").innerHTML=hdr(1)+`<div class="wrap"><h2>Purchase Invoice</h2><div style="display:grid;grid-template-columns:2fr 1fr auto;gap:8px"><input id="pi" placeholder="Item (e.g. Cheese 5kg)"><input id="pa" type="number" placeholder="Amount Rs."><button class="g" onclick="addP()">Save</button></div><p>Total purchases: <b>${fmt(t)}</b></p><div class="sc"><table><tr><th>Date</th><th>Item</th><th>Amount</th></tr>${DB.purch.slice().reverse().map(p=>`<tr><td>${dt(p.t)}</td><td>${p.i}</td><td>${p.amt}</td></tr>`).join("")}</table></div></div>`}
+function addP(){const i=$("pi").value.trim(),a=+$("pa").value;if(!i||!a)return;DB.purch.push({t:Date.now(),i,amt:a});save();purch()}
+draw();
+try{fetch("/backup").then(r=>r.json()).then(x=>{if(x&&x.seq>DB.seq){DB=x;save();draw()}}).catch(()=>{})}catch(e){}
+</script></body></html>
